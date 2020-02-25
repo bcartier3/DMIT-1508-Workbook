@@ -20,6 +20,8 @@ FROM    Registration
 SELECT  AVG(Mark) AS 'Average Mark' -- Some Aggregate functions expect to work with numbers
 FROM    Registration
 WHERE   CourseId = 'DMIT104'
+-- Exploring - what are all the marks in Registration?
+-- SELECT * FROM Registration ORDER BY CourseId
 
 --3.	Select how many students are there in the Student Table
 SELECT  COUNT(FirstName) AS 'Student Count'
