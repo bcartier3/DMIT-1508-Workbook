@@ -4,6 +4,8 @@
 USE [A01-School]
 GO
 
+-- NOTE: Subqueries should only return a single column's worth of data
+
 --1. Select the Payment dates and payment amount for all payments that were Cash
 SELECT PaymentDate, Amount
 FROM   Payment
@@ -15,22 +17,33 @@ WHERE  PaymentTypeID = -- Using the = means that the RH side must be a single va
      WHERE  PaymentTypeDescription = 'cash')
 -- Here is the Inner Join version of the above
 SELECT PaymentDate, Amount
-FROM   Payment P
-    INNER JOIN PaymentType PT
+FROM   Payment AS P
+    INNER JOIN PaymentType AS PT
             ON PT.PaymentTypeID = P.PaymentTypeID
 WHERE  PaymentTypeDescription = 'cash'
 
 
 --2. Select The Student ID's of all the students that are in the 'Association of Computing Machinery' club
 -- TODO: Student Answer Here
+SELECT StudentID
+FROM   Activity
+WHERE  ClubId = (SELECT ClubId
+				 FROM	Club
+				 WHERE	ClubName = 'Association of Computing Machinery')
 
 -- 2.b. Select the names of all the students in the 'Association of Computing Machinery' club. Use a subquery for your answer. When you make your answer, ensure the outmost query only uses the Student table in its FROM clause.
-
+SELECT FirstName + ' ' + LastName AS 'Student Name'
+FROM   Student
+WHERE  StudentID IN (SELECT StudentID	FROM  Activity
+					 WHERE  ClubId = 
+				    (SELECT ClubId		FROM  Club
+					 WHERE  ClubName = 'Association of Computing Machinery'))
 --3. Select All the staff full names for staff that have taught a course.
 SELECT FirstName + ' ' + LastName AS 'Staff'
 FROM   Staff
 WHERE  StaffID IN -- I used IN because the subquery returns many rows
     (SELECT DISTINCT StaffID FROM Registration)
+	-- DISTINCT doesn't show all duplicates
 
 -- The above can also be done as an INNER JOIN...
 SELECT DISTINCT FirstName + ' ' + LastName AS 'Staff'
@@ -41,7 +54,10 @@ FROM Staff
 
 --4. Select All the staff full names that taught DMIT172.
 -- TODO: Student Answer Here
-
+SELECT FirstName + ' ' + LastName AS 'Staff'
+FROM   Staff
+WHERE  StaffID IN (SELECT StaffID	FROM Registration
+				  WHERE CourseId = 'DMIT172')
 
 --5. Select All the staff full names of staff that have never taught a course
 SELECT FirstName + ' ' + LastName AS 'Staff'
@@ -110,7 +126,9 @@ WHERE City = 'Edm'
 
 -- 9. What is the avg mark for each of the students from Edm? Display their StudentID and avg(mark)
 -- TODO: Student Answer Here...
-
+SELECT StudentID, AVG(Mark) AS 'Average'
+FROM   Registration
+WHERE  
 -- 10. Which student(s) have the highest average mark? Hint - This can only be done by a subquery.
 -- TODO: Student Answer Here...
 
